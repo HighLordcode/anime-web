@@ -1,0 +1,48 @@
+name: Fetch Episodes Daily
+
+on:
+  schedule:
+    # Ejecutar cada día a las 7 AM UTC (2 AM EST)
+    - cron: '0 7 * * *'
+  workflow_dispatch:
+
+jobs:
+  fetch-episodes:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Fetch episodes from Jikan
+        run: node scripts/utils/jikan-fetcher.js
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          NEXT_PUBLIC_JIKAN_API_URL: https://api.jikan.moe/v4
+      
+      - name: Publish to Blogger
+        run: node scripts/utils/blogger-publisher.js
+        env:
+          BLOGGER_API_KEY: ${{ secrets.BLOGGER_API_KEY }}
+          BLOGGER_BLOG_ID: ${{ secrets.BLOGGER_BLOG_ID }}
+          BLOGGER_REFRESH_TOKEN: ${{ secrets.BLOGGER_REFRESH_TOKEN }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+      
+      - name: Send Discord notification
+        if: always()
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook_url: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          status: ${{ job.status }}
+          description: 'Cron job: Fetch Episodes'
