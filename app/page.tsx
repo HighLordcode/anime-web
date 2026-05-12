@@ -6,6 +6,7 @@ import Footer from '@/components/shared/Footer'
 import EpisodeGrid from '@/components/sections/EpisodeGrid'
 import AnimeSeasonGrid from '@/components/sections/AnimeSeasonGrid'
 import { useEpisodes } from '@/lib/hooks/useEpisodes'
+import { useAnimes } from '@/lib/hooks/useAnimes'
 
 export default function HomePage() {
   const [mounted, setMounted] = useState(false)
@@ -64,53 +65,6 @@ export default function HomePage() {
       <Footer />
     </div>
   )
-}
-
-// Hooks de datos
-function useEpisodes() {
-  const [episodes, setEpisodes] = useState([])
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    async function fetchEpisodes() {
-      try {
-        const res = await fetch('/api/episodios')
-        const data = await res.json()
-        setEpisodes(data.data || [])
-      } catch (error) {
-        console.error('Error fetching episodes:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchEpisodes()
-  }, [])
-
-  return { episodes, loading }
-}
-
-function useAnimes() {
-  const [animes, setAnimes] = useState([])
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    async function fetchAnimes() {
-      try {
-        const res = await fetch('/api/animes')
-        const data = await res.json()
-        setAnimes(data.data || [])
-      } catch (error) {
-        console.error('Error fetching animes:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchAnimes()
-  }, [])
-
-  return { animes, loading }
 }
 
 // Skeletons

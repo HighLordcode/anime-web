@@ -24,9 +24,9 @@ CREATE TABLE IF NOT EXISTS public.animes (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW())
 );
 
-CREATE INDEX idx_animes_jikan_id ON public.animes(jikan_id);
-CREATE INDEX idx_animes_titulo ON public.animes(titulo);
-CREATE INDEX idx_animes_estado ON public.animes(estado);
+CREATE INDEX IF NOT EXISTS idx_animes_jikan_id ON public.animes(jikan_id);
+CREATE INDEX IF NOT EXISTS idx_animes_titulo ON public.animes(titulo);
+CREATE INDEX IF NOT EXISTS idx_animes_estado ON public.animes(estado);
 
 -- ============================================================
 -- TABLE: episodios
@@ -47,9 +47,9 @@ CREATE TABLE IF NOT EXISTS public.episodios (
   UNIQUE(anime_id, numero)
 );
 
-CREATE INDEX idx_episodios_anime_id ON public.episodios(anime_id);
-CREATE INDEX idx_episodios_fecha ON public.episodios(fecha_estreno DESC);
-CREATE INDEX idx_episodios_blogger_post_id ON public.episodios(blogger_post_id);
+CREATE INDEX IF NOT EXISTS idx_episodios_anime_id ON public.episodios(anime_id);
+CREATE INDEX IF NOT EXISTS idx_episodios_fecha ON public.episodios(fecha_estreno DESC);
+CREATE INDEX IF NOT EXISTS idx_episodios_blogger_post_id ON public.episodios(blogger_post_id);
 
 -- ============================================================
 -- TABLE: usuarios (con Auth integrada)
@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS public.usuarios (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW())
 );
 
-CREATE INDEX idx_usuarios_username ON public.usuarios(username);
+CREATE INDEX IF NOT EXISTS idx_usuarios_username ON public.usuarios(username);
 
 -- ============================================================
 -- TABLE: favoritos
@@ -77,8 +77,8 @@ CREATE TABLE IF NOT EXISTS public.favoritos (
   UNIQUE(usuario_id, anime_id)
 );
 
-CREATE INDEX idx_favoritos_usuario ON public.favoritos(usuario_id);
-CREATE INDEX idx_favoritos_anime ON public.favoritos(anime_id);
+CREATE INDEX IF NOT EXISTS idx_favoritos_usuario ON public.favoritos(usuario_id);
+CREATE INDEX IF NOT EXISTS idx_favoritos_anime ON public.favoritos(anime_id);
 
 -- ============================================================
 -- TABLE: historial (episodios vistos)
@@ -94,9 +94,9 @@ CREATE TABLE IF NOT EXISTS public.historial (
   UNIQUE(usuario_id, episodio_id)
 );
 
-CREATE INDEX idx_historial_usuario ON public.historial(usuario_id);
-CREATE INDEX idx_historial_episodio ON public.historial(episodio_id);
-CREATE INDEX idx_historial_fecha ON public.historial(fecha_visto DESC);
+CREATE INDEX IF NOT EXISTS idx_historial_usuario ON public.historial(usuario_id);
+CREATE INDEX IF NOT EXISTS idx_historial_episodio ON public.historial(episodio_id);
+CREATE INDEX IF NOT EXISTS idx_historial_fecha ON public.historial(fecha_visto DESC);
 
 -- ============================================================
 -- TABLE: blogger_sync_log
@@ -110,8 +110,8 @@ CREATE TABLE IF NOT EXISTS public.blogger_sync_log (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW())
 );
 
-CREATE INDEX idx_blogger_sync_episodio ON public.blogger_sync_log(episodio_id);
-CREATE INDEX idx_blogger_sync_estado ON public.blogger_sync_log(estado);
+CREATE INDEX IF NOT EXISTS idx_blogger_sync_episodio ON public.blogger_sync_log(episodio_id);
+CREATE INDEX IF NOT EXISTS idx_blogger_sync_estado ON public.blogger_sync_log(estado);
 
 -- ============================================================
 -- VIEWS
@@ -149,6 +149,16 @@ LIMIT 50;
 ALTER TABLE public.usuarios ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.favoritos ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.historial ENABLE ROW LEVEL SECURITY;
+
+-- Eliminar políticas existentes (si existen)
+DROP POLICY IF EXISTS "usuarios_can_read_own_profile" ON public.usuarios;
+DROP POLICY IF EXISTS "usuarios_can_update_own_profile" ON public.usuarios;
+DROP POLICY IF EXISTS "favoritos_can_read_own" ON public.favoritos;
+DROP POLICY IF EXISTS "favoritos_can_insert_own" ON public.favoritos;
+DROP POLICY IF EXISTS "favoritos_can_delete_own" ON public.favoritos;
+DROP POLICY IF EXISTS "historial_can_read_own" ON public.historial;
+DROP POLICY IF EXISTS "historial_can_insert_own" ON public.historial;
+DROP POLICY IF EXISTS "historial_can_update_own" ON public.historial;
 
 -- Policy: Usuarios solo ven su perfil
 CREATE POLICY "usuarios_can_read_own_profile"

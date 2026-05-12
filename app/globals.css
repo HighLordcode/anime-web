@@ -102,7 +102,7 @@ select:focus {
   }
 
   .section-title {
-    @apply font-condensed text-2xl font-bold uppercase letter-spacing-1 text-white flex items-center gap-2;
+    @apply font-condensed text-2xl font-bold uppercase tracking-wider text-white flex items-center gap-2;
   }
 
   .section-head {
