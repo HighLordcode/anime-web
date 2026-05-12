@@ -1,6 +1,5 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import { Anime, ApiResponse } from '@/lib/types'
 import useSWR from 'swr'
 
