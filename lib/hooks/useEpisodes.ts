@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { Episodio, ApiResponse } from '@/lib/types'
 import useSWR from 'swr'
 
