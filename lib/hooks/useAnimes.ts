@@ -48,19 +48,21 @@ export function useSearchAnime(query: string) {
   }
 }
 
-export function useSeasonalAnime() {
+export function useSeasonalAnime(limit = 25) {
   const { data, error, isLoading } = useSWR(
-    '/api/animes/temporada',
+    `/api/animes/temporada?limit=${limit}`,
     fetcher,
     {
-      revalidateOnFocus: false
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false
     }
   )
 
   return {
-    animes: (data as ApiResponse<Anime[]>)?.data || [],
+    animes: (data as any)?.data || [],
     loading: isLoading,
-    error
+    error,
+    season: (data as any)?.season
   }
 }
 

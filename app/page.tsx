@@ -1,21 +1,41 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import Header from '@/components/shared/Header'
 import Footer from '@/components/shared/Footer'
 import EpisodeGrid from '@/components/sections/EpisodeGrid'
 import AnimeSeasonGrid from '@/components/sections/AnimeSeasonGrid'
 import { useEpisodes } from '@/lib/hooks/useEpisodes'
 import { useAnimes } from '@/lib/hooks/useAnimes'
+import { useSeasonAnimes } from '@/lib/hooks/useSeasons'
+
+function getCurrentSeason(): string {
+  const month = new Date().getMonth() + 1
+  if ([12, 1, 2].includes(month)) return 'invierno'
+  if ([3, 4, 5].includes(month)) return 'primavera'
+  if ([6, 7, 8].includes(month)) return 'verano'
+  return 'otono'
+}
+
+const SEASON_LABELS: Record<string, string> = {
+  invierno: '❄️ Invierno',
+  primavera: '🌸 Primavera',
+  verano: '☀️ Verano',
+  otono: '🍂 Otoño'
+}
 
 export default function HomePage() {
   const [mounted, setMounted] = useState(false)
   const { episodes, loading: episodesLoading } = useEpisodes()
-  const { animes, loading: animesLoading } = useAnimes()
+  const currentSeason = getCurrentSeason()
+  const { animes: seasonAnimes, loading: seasonLoading } = useSeasonAnimes(currentSeason)
 
   useEffect(() => {
     setMounted(true)
   }, [])
+
+  if (!mounted) return null
 
   if (!mounted) return null
 
@@ -48,13 +68,19 @@ export default function HomePage() {
             <div className="section-head">
               <h2 className="section-title">
                 <i className="fas fa-calendar-days" />
-                Temporada Actual
+                {SEASON_LABELS[currentSeason]} {new Date().getFullYear()}
               </h2>
+              <Link
+                href="/temporada"
+                className="text-xs font-semibold text-primary hover:text-primary-dark transition"
+              >
+                Ver todas <i className="fas fa-arrow-right ml-1" />
+              </Link>
             </div>
-            {animesLoading ? (
+            {seasonLoading ? (
               <AnimeGridSkeleton />
-            ) : animes.length > 0 ? (
-              <AnimeSeasonGrid animes={animes} />
+            ) : seasonAnimes.length > 0 ? (
+              <AnimeSeasonGrid animes={seasonAnimes} />
             ) : (
               <EmptyState message="No hay animes en temporada" />
             )}

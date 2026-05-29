@@ -1,9 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
+  swcMinify: false,
   images: {
     domains: [
+      'myanimelist.net',
       'cdn.myanimelist.net',
       'api.jikan.moe',
       'image.tmdb.org',
@@ -16,6 +17,10 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: '**.myanimelist.net'
+      },
+      {
+        protocol: 'https',
+        hostname: 'myanimelist.net'
       },
       {
         protocol: 'https',

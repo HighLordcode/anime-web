@@ -10,6 +10,14 @@ export interface Anime {
   generos: string[]
   puntuacion: number
   episodios_totales: number
+  url_jikan?: string
+  tipo?: string
+  temporada?: string
+  anio?: number
+  estudio?: string
+  ranking?: number
+  popularidad?: number
+  total_miembros?: number
   blogger_page_id?: string
   created_at: string
   updated_at: string

@@ -92,6 +92,34 @@ export async function getTopAnime(page = 1) {
   }
 }
 
+// Obtener animes con filtros avanzados
+export async function getAnimeWithFilters(filters: {
+  status?: 'airing' | 'complete' | 'upcoming'
+  type?: 'TV' | 'Movie' | 'OVA' | 'ONA' | 'Special'
+  orderBy?: 'mal_id' | 'title' | 'type' | 'episodes' | 'score' | 'ranked' | 'popularity' | 'airing' | 'upcoming'
+  sort?: 'desc' | 'asc'
+  page?: number
+  limit?: number
+} = {}) {
+  try {
+    const response = await jikanClient.get('/anime', {
+      params: {
+        status: filters.status,
+        type: filters.type,
+        order_by: filters.orderBy,
+        sort: filters.sort || 'desc',
+        page: filters.page || 1,
+        limit: filters.limit || 25,
+        min_score: 6
+      }
+    })
+    return response.data
+  } catch (error) {
+    console.error('Error fetching anime with filters:', error)
+    throw error
+  }
+}
+
 // Obtener personajes de anime
 export async function getAnimeCharacters(malId: number) {
   try {
