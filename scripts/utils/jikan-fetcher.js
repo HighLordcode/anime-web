@@ -104,7 +104,7 @@ async function upsertEpisode(episodeData) {
       .select('id')
       .eq('anime_id', episodeData.anime_id)
       .eq('numero', episodeData.numero)
-      .single()
+      .maybeSingle()
 
     if (existing) {
       // Ya existe, no actualizar
@@ -120,10 +120,6 @@ async function upsertEpisode(episodeData) {
       return data.id
     }
   } catch (error) {
-    if (error.code === 'PGRST116') {
-      // No existe, es normal
-      return null
-    }
     console.error('  ❌ Error upserting episode:', error.message)
     throw error
   }
